@@ -1,0 +1,6 @@
+App\Entity\User:
+  collectionOperations:
+    post:
+    get:
+  itemOperations:
+    get:
