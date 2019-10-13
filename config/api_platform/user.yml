@@ -1,0 +1,11 @@
+App\Entity\User:
+  collectionOperations:
+    post:
+    get:
+  itemOperations:
+    get:
+  attributes:
+    normalization_context:
+      groups: ['user:read']
+    denormalization_context:
+      groups: ['user:write']
