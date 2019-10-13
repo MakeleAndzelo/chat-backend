@@ -117,4 +117,9 @@ class User implements UserInterface
         $this->name = $name;
         return $this;
     }
+
+    public function getName(): string
+    {
+        return $this->name;
+    }
 }
