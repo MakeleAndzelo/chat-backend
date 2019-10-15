@@ -2,6 +2,14 @@ App\Entity\User:
   collectionOperations:
     post:
     get:
+    get_current:
+      method: 'GET'
+      path: /users/current
+      controller: App\Action\User\CurrentShowAction
+      access_control: is_granted('IS_AUTHENTICATED_FULLY')
+      swagger_context:
+        summary: 'Logged in User'
+        description: 'Logged in UserData'
   itemOperations:
     get:
   attributes:
