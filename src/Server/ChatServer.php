@@ -6,6 +6,7 @@ namespace App\Server;
 
 use App\Entity\User;
 use App\Events\ChatEventTypes;
+use App\Events\ChatNewMessageSent;
 use App\Events\ChatUserAuthorizationRequestedEvent;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Ratchet\ConnectionInterface;
@@ -45,6 +46,11 @@ class ChatServer implements MessageComponentInterface
             case ChatEventTypes::USER_AUTHORIZATION_TYPE:
                 $eventDispatcher->dispatch(
                     new ChatUserAuthorizationRequestedEvent($this->clients, $from, $data)
+                );
+                break;
+            case ChatEventTypes::NEW_MESSAGE:
+                $eventDispatcher->dispatch(
+                  new ChatNewMessageSent($this->clients, $from, $data)
                 );
                 break;
             default:

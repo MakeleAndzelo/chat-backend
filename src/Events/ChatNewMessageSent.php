@@ -7,7 +7,7 @@ namespace App\Events;
 use Ratchet\ConnectionInterface;
 use SplObjectStorage;
 
-class ChatUserAuthorizationRequestedEvent extends AbstractChatEvent
+class ChatNewMessageSent extends AbstractChatEvent
 {
     /**
      * @var array
