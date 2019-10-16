@@ -26,8 +26,9 @@ class ChatNewMessageSubscriber implements EventSubscriberInterface
                 'type' => 'messagesAdd',
                 'payload' => [
                     'message' => $event->getData()['message'],
-                    'author' => 'foo',
-                    'createdAt' => $timestamp
+                    'author' => $event->getData()['author'],
+                    'createdAt' => $timestamp,
+                    'id' => uniqid()
                 ]
             ]));
         }
