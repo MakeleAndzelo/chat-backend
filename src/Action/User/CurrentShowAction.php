@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Action\User;
 
 use App\Entity\User;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Security;
 
