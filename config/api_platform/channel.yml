@@ -1,0 +1,5 @@
+App\Entity\Channel:
+  collectionOperations:
+    get:
+  itemOperations:
+    get:
