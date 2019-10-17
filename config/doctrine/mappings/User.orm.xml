@@ -12,5 +12,7 @@
         <field name="password" column="password" type="string"/>
 
         <field name="name" type="string" column="name"/>
+
+        <one-to-many field="messages" target-entity="App\Entity\Message" mapped-by="user" orphan-removal="true"/>
     </entity>
 </doctrine-mapping>

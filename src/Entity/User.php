@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -33,6 +34,16 @@ class User implements UserInterface
      * @var string The hashed password
      */
     private $password;
+
+    /**
+     * @var ArrayCollection|Message[]
+     */
+    private $messages;
+
+    public function __construct()
+    {
+        $this->messages = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -121,5 +132,13 @@ class User implements UserInterface
     public function getName(): string
     {
         return $this->name;
+    }
+
+    /**
+     * @return Message[]|ArrayCollection
+     */
+    public function getMessages()
+    {
+        return $this->messages;
     }
 }
