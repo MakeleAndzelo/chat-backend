@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Server;
 
-use App\Entity\User;
+use App\Entity\Channel;
 use App\Events\ChatEventTypes;
 use App\Events\ChatNewMessageSent;
 use App\Events\ChatUserAuthorizationRequestedEvent;
-use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
+use App\Services\ClientChannelChanger;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use SplObjectStorage;
@@ -52,6 +52,16 @@ class ChatServer implements MessageComponentInterface
                 $eventDispatcher->dispatch(
                   new ChatNewMessageSent($this->clients, $from, $data)
                 );
+                break;
+            case ChatEventTypes::CHANNEL_CHANGE:
+                $entityManager = $this->container->get('doctrine.orm.entity_manager');
+                $channelRepository = $entityManager->getRepository(Channel::class);
+                $channel = $channelRepository->findOneBy(['id' => $data['channel']['id']]);
+
+                if ($channel instanceof Channel) {
+                    $clientChannelChanger = new ClientChannelChanger();
+                    $this->clients = $clientChannelChanger->change($this->clients, $from, $channel);
+                }
                 break;
             default:
                 break;
