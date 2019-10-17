@@ -4,6 +4,7 @@
 namespace App\EventSubscriber;
 
 
+use App\Entity\Channel;
 use App\Entity\User;
 use App\Events\ChatUserAuthorizationRequestedEvent;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,6 +48,9 @@ class ChatUserAuthorizationSubscriber implements EventSubscriberInterface
         $payload = $this->JWTManager->decode($token);
 
         $userRepository = $this->entityManager->getRepository(User::class);
+        $channelRepository = $this->entityManager->getRepository(Channel::class);
+
+        $channel = $channelRepository->findOneBy(['id' => $data['channel']['id']]);
 
         $user = $userRepository->findOneBy([
             'email' => $payload['username']
@@ -59,6 +63,7 @@ class ChatUserAuthorizationSubscriber implements EventSubscriberInterface
         foreach ($clients as $client) {
             if ($client->getConnection() === $from) {
                 $client->attachUser($user);
+                $client->changeChannel($channel);
             }
         }
 

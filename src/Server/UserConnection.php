@@ -2,6 +2,7 @@
 
 namespace App\Server;
 
+use App\Entity\Channel;
 use App\Entity\User;
 use Ratchet\ConnectionInterface;
 
@@ -16,6 +17,11 @@ class UserConnection
      * @var User
      */
     private $user;
+
+    /**
+     * @var Channel
+     */
+    private $channel;
 
     public function __construct(ConnectionInterface $connection)
     {
@@ -39,5 +45,28 @@ class UserConnection
         }
 
         return $this->user->getId();
+    }
+
+    public function changeChannel(Channel $channel): self
+    {
+        $this->channel = $channel;
+
+        return $this;
+    }
+
+    /**
+     * @return User
+     */
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * @return Channel
+     */
+    public function getChannel(): Channel
+    {
+        return $this->channel;
     }
 }

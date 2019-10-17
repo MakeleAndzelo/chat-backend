@@ -6,5 +6,7 @@
         </id>
 
         <field name="name" type="string" column="name"/>
+
+        <one-to-many field="messages" target-entity="App\Entity\Message" mapped-by="channel" orphan-removal="true"/>
     </entity>
 </doctrine-mapping>

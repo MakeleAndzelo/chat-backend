@@ -4,12 +4,30 @@ declare(strict_types=1);
 
 namespace App\EventSubscriber;
 
+use App\Entity\Message;
 use App\Events\ChatNewMessageSent;
 use DateTime;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class ChatNewMessageSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+    /**
+     * @var SerializerInterface
+     */
+    private $serializer;
+
+    public function __construct(EntityManagerInterface $entityManager, SerializerInterface $serializer)
+    {
+        $this->entityManager = $entityManager;
+        $this->serializer = $serializer;
+    }
+
     public static function getSubscribedEvents(): array
     {
         return [
@@ -19,18 +37,30 @@ class ChatNewMessageSubscriber implements EventSubscriberInterface
 
     public function onNewMessage(ChatNewMessageSent $event): void
     {
-        $timestamp = (new DateTime())->format('Y-m-d H:i');
+        $currentClient = null;
 
         foreach ($event->getClients() as $client) {
-            $client->getConnection()->send(json_encode([
-                'type' => 'messagesAdd',
-                'payload' => [
-                    'message' => $event->getData()['message'],
-                    'author' => $event->getData()['author'],
-                    'createdAt' => $timestamp,
-                    'id' => uniqid()
-                ]
-            ]));
+            if ($client->getConnection() === $event->getFrom()) {
+                $currentClient = $client;
+            }
+        }
+
+        $message = (new Message())
+            ->setCreatedAt(new DateTime())
+            ->setBody($event->getData()['message'])
+            ->setUser($currentClient->getUser())
+            ->setChannel($currentClient->getChannel());
+
+        $this->entityManager->persist($message);
+        $this->entityManager->flush();
+
+        foreach ($event->getClients() as $client) {
+            if ($client->getChannel()->getId() === $currentClient->getChannel()->getId()) {
+                $client->getConnection()->send($this->serializer->serialize([
+                    'type' => 'messagesAdd',
+                    'payload' => $message
+                ], 'json'));
+            }
         }
     }
 }
