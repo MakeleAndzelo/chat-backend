@@ -1,9 +1,9 @@
 App\Entity\User:
   attributes:
     id:
-      groups: ['user:read']
+      groups: ['user:read', 'message_subresource:read']
     name:
-      groups: ['user:read', 'user:write']
+      groups: ['user:read', 'user:write', 'message_subresource:read']
     email:
       groups: ['user:read', 'user:write']
     password:

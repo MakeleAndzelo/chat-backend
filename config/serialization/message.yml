@@ -1,0 +1,10 @@
+App\Entity\Message:
+  attributes:
+    id:
+      groups: ['message:read', 'message_subresource:read']
+    body:
+      groups: ['message:read', 'message_subresource:read']
+    user:
+      groups: ['message:read', 'message_subresource:read']
+    createdAt:
+      groups: ['message:read', 'message_subresource:read']
