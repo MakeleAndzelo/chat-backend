@@ -17,6 +17,7 @@ class ChatNewMessageSubscriber implements EventSubscriberInterface
      * @var EntityManagerInterface
      */
     private $entityManager;
+
     /**
      * @var SerializerInterface
      */
@@ -37,13 +38,7 @@ class ChatNewMessageSubscriber implements EventSubscriberInterface
 
     public function onNewMessage(ChatNewMessageSent $event): void
     {
-        $currentClient = null;
-
-        foreach ($event->getClients() as $client) {
-            if ($client->getConnection() === $event->getFrom()) {
-                $currentClient = $client;
-            }
-        }
+        $currentClient = $event->getUserConnectionsStorage()->findByConnection($event->getFrom());
 
         $message = (new Message())
             ->setCreatedAt(new DateTime())
@@ -54,7 +49,7 @@ class ChatNewMessageSubscriber implements EventSubscriberInterface
         $this->entityManager->persist($message);
         $this->entityManager->flush();
 
-        foreach ($event->getClients() as $client) {
+        foreach ($event->getUserConnectionsStorage()->getUserConnections() as $client) {
             if ($client->getChannel()->getId() === $currentClient->getChannel()->getId()) {
                 $client->getConnection()->send($this->serializer->serialize([
                     'type' => 'messagesAdd',

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Events;
 
+use App\Server\UserConnectionsStorageInterface;
 use Ratchet\ConnectionInterface;
-use SplObjectStorage;
 
 class ChatUserAuthorizationRequestedEvent extends AbstractChatEvent
 {
@@ -14,9 +14,12 @@ class ChatUserAuthorizationRequestedEvent extends AbstractChatEvent
      */
     protected $data;
 
-    public function __construct(SplObjectStorage $clients, ConnectionInterface $from, array $data)
-    {
-        parent::__construct($clients, $from);
+    public function __construct(
+        UserConnectionsStorageInterface $userConnectionStorage,
+        ConnectionInterface $from,
+        array $data
+    ) {
+        parent::__construct($userConnectionStorage, $from);
         $this->data = $data;
     }
 
