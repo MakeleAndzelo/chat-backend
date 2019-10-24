@@ -19,6 +19,7 @@ services:
 
     app.chat.client_channel_changer:
         class: App\Services\ClientChannelChanger
+        public: true
 
     app.chat.client_authorizer:
         class: App\Services\ClientAuthorizer
@@ -26,6 +27,10 @@ services:
         arguments:
             - '@doctrine.orm.default_entity_manager'
             - '@lexik_jwt_authentication.jwt_manager'
+
+    app.chat.client_remover:
+        class: App\Services\ClientRemover
+        public: true
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class

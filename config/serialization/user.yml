@@ -3,7 +3,7 @@ App\Entity\User:
     id:
       groups: ['user:read', 'message_subresource:read']
     name:
-      groups: ['user:read', 'user:write', 'message_subresource:read']
+      groups: ['message:read', 'user:read', 'user:write', 'message_subresource:read']
     email:
       groups: ['user:read', 'user:write']
     password:

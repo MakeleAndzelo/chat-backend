@@ -8,12 +8,13 @@ use App\Entity\Channel;
 use App\Events\ChatEventTypes;
 use App\Events\ChatNewMessageSent;
 use App\Events\ChatUserAuthorizationRequestedEvent;
+use App\Events\UserDisconnectEvent;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use SplObjectStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ChatServer implements MessageComponentInterface
+final class ChatServer implements MessageComponentInterface
 {
     /**
      * @var ContainerInterface
@@ -31,12 +32,12 @@ class ChatServer implements MessageComponentInterface
         $this->container = $container;
     }
 
-    public function onOpen(ConnectionInterface $conn)
+    public function onOpen(ConnectionInterface $conn): void
     {
         $this->userConnectionsStorage->attach(new UserConnection($conn));
     }
 
-    function onMessage(ConnectionInterface $from, $msg)
+    public function onMessage(ConnectionInterface $from, $msg): void
     {
         $data = json_decode($msg, true);
         $eventDispatcher = $this->container->get('event_dispatcher');
@@ -75,26 +76,19 @@ class ChatServer implements MessageComponentInterface
     }
 
 
-    function onClose(ConnectionInterface $conn)
+    public function onClose(ConnectionInterface $conn): void
     {
-        $userConnection = $this->userConnectionsStorage->findByConnection($conn);
+        $clientRemover = $this->container->get('app.chat.client_remover');
+        $removedUserConnection = $clientRemover->remove($this->userConnectionsStorage, $conn);
 
-        if (null !== $userConnection) {
-            $this->userConnectionsStorage->detach($userConnection);
-
-            foreach ($this->userConnectionsStorage->getUserConnections() as $client) {
-                $client->getConnection()->send(json_encode([
-                    'type' => 'offlineUser',
-                    'payload' => [
-                        'id' => $userConnection->getUser()->getId()
-                    ]
-                ]));
-            }
-        }
+        $eventDispatcher = $this->container->get('event_dispatcher');
+        $eventDispatcher->dispatch(new UserDisconnectEvent($this->userConnectionsStorage, $removedUserConnection));
     }
 
-    function onError(ConnectionInterface $conn, \Exception $e)
+    public function onError(ConnectionInterface $conn, \Exception $e): void
     {
-        $conn->close();
+        $conn->send(json_encode([
+            'type' => 'connectionError'
+        ]));
     }
 }
