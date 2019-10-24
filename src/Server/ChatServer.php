@@ -24,7 +24,7 @@ final class ChatServer implements MessageComponentInterface
     /**
      * @var UserConnectionsStorage
      */
-    protected $userConnectionsStorage;
+    private $userConnectionsStorage;
 
     public function __construct(ContainerInterface $container)
     {
@@ -42,7 +42,7 @@ final class ChatServer implements MessageComponentInterface
         $data = json_decode($msg, true);
         $eventDispatcher = $this->container->get('event_dispatcher');
 
-        switch($data['type']) {
+        switch ($data['type']) {
             case ChatEventTypes::USER_AUTHORIZATION_TYPE:
                 $clientAuthorizer = $this->container->get('app.chat.client_authorizer');
                 $clientAuthorizer->authorize($this->userConnectionsStorage, $from, $data['token'], $data['channel']['id']);
@@ -53,7 +53,7 @@ final class ChatServer implements MessageComponentInterface
                 break;
             case ChatEventTypes::NEW_MESSAGE:
                 $eventDispatcher->dispatch(
-                  new ChatNewMessageSent($this->userConnectionsStorage, $from, $data)
+                    new ChatNewMessageSent($this->userConnectionsStorage, $from, $data)
                 );
                 break;
             case ChatEventTypes::CHANNEL_CHANGE:
@@ -75,7 +75,6 @@ final class ChatServer implements MessageComponentInterface
         }
     }
 
-
     public function onClose(ConnectionInterface $conn): void
     {
         $clientRemover = $this->container->get('app.chat.client_remover');
@@ -85,10 +84,10 @@ final class ChatServer implements MessageComponentInterface
         $eventDispatcher->dispatch(new UserDisconnectEvent($this->userConnectionsStorage, $removedUserConnection));
     }
 
-    public function onError(ConnectionInterface $conn, \Exception $e): void
+    public function onError(ConnectionInterface $conn, \Throwable $e): void
     {
         $conn->send(json_encode([
-            'type' => 'connectionError'
+            'type' => 'connectionError',
         ]));
     }
 }

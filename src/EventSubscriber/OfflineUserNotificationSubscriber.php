@@ -23,8 +23,8 @@ class OfflineUserNotificationSubscriber implements EventSubscriberInterface
             $client->getConnection()->send(json_encode([
                 'type' => 'offlineUser',
                 'payload' => [
-                    'id' => $removedUserConnection->getUserId()
-                ]
+                    'id' => $removedUserConnection->getUserId(),
+                ],
             ]));
         }
     }

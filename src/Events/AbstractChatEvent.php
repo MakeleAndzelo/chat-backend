@@ -26,17 +26,11 @@ abstract class AbstractChatEvent extends Event
         $this->from = $from;
     }
 
-    /**
-     * @return UserConnectionsStorageInterface
-     */
-    public function getUserConnectionsStorage()
+    public function getUserConnectionsStorage(): UserConnectionsStorageInterface
     {
         return $this->userConnectionsStorage;
     }
 
-    /**
-     * @return ConnectionInterface
-     */
     public function getFrom(): ConnectionInterface
     {
         return $this->from;

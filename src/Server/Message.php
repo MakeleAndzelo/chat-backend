@@ -11,21 +11,15 @@ class Message
      */
     private $type;
 
-    /**
-     * @return string
-     */
     public function getType(): string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     * @return Message
-     */
-    public function setType(string $type): Message
+    public function setType(string $type): self
     {
         $this->type = $type;
+
         return $this;
     }
 }

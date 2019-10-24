@@ -30,7 +30,7 @@ class CurrentShowAction
     {
         $user = $this->tokenStorage->getToken()->getUser();
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             return null;
         }
 

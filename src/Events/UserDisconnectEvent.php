@@ -26,17 +26,11 @@ class UserDisconnectEvent extends Event
         $this->removedUserConnection = $removedUserConnection;
     }
 
-    /**
-     * @return UserConnectionsStorage
-     */
     public function getUserConnectionsStorage(): UserConnectionsStorage
     {
         return $this->userConnectionsStorage;
     }
 
-    /**
-     * @return UserConnection
-     */
     public function getRemovedUserConnection(): UserConnection
     {
         return $this->removedUserConnection;

@@ -16,7 +16,7 @@ class ChatUserAuthorizationSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function onUserAuthorizationRequested(ChatUserAuthorizationRequestedEvent $event)
+    public function onUserAuthorizationRequested(ChatUserAuthorizationRequestedEvent $event): void
     {
         $clients = $event->getUserConnectionsStorage();
         $from = $event->getFrom();
@@ -29,8 +29,8 @@ class ChatUserAuthorizationSubscriber implements EventSubscriberInterface
         $from->send(json_encode([
             'type' => 'onlineUsers',
             'payload' => [
-                'ids' => $connectedUsersIds
-            ]
+                'ids' => $connectedUsersIds,
+            ],
         ]));
     }
 }

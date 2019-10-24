@@ -11,11 +11,6 @@ use Ratchet\ConnectionInterface;
 
 class ClientChannelChanger
 {
-    /**
-     * @param UserConnectionsStorageInterface $userConnectionsStorage
-     * @param ConnectionInterface $from
-     * @param Channel $channel
-     */
     public function change(
         UserConnectionsStorageInterface $userConnectionsStorage,
         ConnectionInterface $from,

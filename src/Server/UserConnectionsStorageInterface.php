@@ -17,5 +17,5 @@ interface UserConnectionsStorageInterface
     /**
      * @return UserConnection[]
      */
-    public function getUserConnections();
+    public function getUserConnections(): array;
 }

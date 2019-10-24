@@ -46,10 +46,10 @@ class ClientAuthorizer
         $channel = $channelRepository->findOneBy(['id' => $channelId]);
 
         $user = $userRepository->findOneBy([
-            'email' => $payload['username']
+            'email' => $payload['username'],
         ]);
 
-        if (!$user instanceof User) {
+        if (! $user instanceof User) {
             return;
         }
 
@@ -59,6 +59,5 @@ class ClientAuthorizer
                 $client->changeChannel($channel);
             }
         }
-
     }
 }

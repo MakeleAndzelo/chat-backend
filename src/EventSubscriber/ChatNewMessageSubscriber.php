@@ -32,7 +32,7 @@ class ChatNewMessageSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ChatNewMessageSent::class => 'onNewMessage'
+            ChatNewMessageSent::class => 'onNewMessage',
         ];
     }
 
@@ -53,7 +53,7 @@ class ChatNewMessageSubscriber implements EventSubscriberInterface
             if ($client->getChannel()->getId() === $currentClient->getChannel()->getId()) {
                 $client->getConnection()->send($this->serializer->serialize([
                     'type' => 'messagesAdd',
-                    'payload' => $message
+                    'payload' => $message,
                 ], 'json'));
             }
         }

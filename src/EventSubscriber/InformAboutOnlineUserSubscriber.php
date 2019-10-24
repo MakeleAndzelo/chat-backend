@@ -12,11 +12,11 @@ class InformAboutOnlineUserSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            ChatUserAuthorizationRequestedEvent::class => 'sendInfoAboutOnlineUser'
+            ChatUserAuthorizationRequestedEvent::class => 'sendInfoAboutOnlineUser',
         ];
     }
 
-    public function sendInfoAboutOnlineUser(ChatUserAuthorizationRequestedEvent $event)
+    public function sendInfoAboutOnlineUser(ChatUserAuthorizationRequestedEvent $event): void
     {
         $newOnlineUser = $event->getUserConnectionsStorage()->findByConnection($event->getFrom());
 
@@ -27,8 +27,8 @@ class InformAboutOnlineUserSubscriber implements EventSubscriberInterface
                     'payload' => [
                         'id' => $newOnlineUser->getUser()->getId(),
                         'name' => $newOnlineUser->getUser()->getName(),
-                        'online' => true
-                    ]
+                        'online' => true,
+                    ],
                 ]));
             }
         }

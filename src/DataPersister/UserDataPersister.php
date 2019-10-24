@@ -34,11 +34,7 @@ class UserDataPersister implements DataPersisterInterface
         return $data instanceof User;
     }
 
-    /**
-     * @param User $user
-     * @return void
-     */
-    public function persist($user)
+    public function persist(User $user): void
     {
         $user->setPassword($this->userPasswordEncoder->encodePassword(
             $user,
@@ -49,11 +45,7 @@ class UserDataPersister implements DataPersisterInterface
         $this->entityManager->flush();
     }
 
-    /**
-     * @param User $user
-     * @return void
-     */
-    public function remove($user)
+    public function remove(User $user): void
     {
         $this->entityManager->remove($user);
         $this->entityManager->flush();

@@ -12,9 +12,6 @@ use Ratchet\ConnectionInterface;
 class ClientRemover
 {
     /**
-     * @param UserConnectionsStorage $userConnectionsStorage
-     * @param ConnectionInterface $connection
-     * @return UserConnection
      * @throws UserConnectionNotFoundException
      */
     public function remove(
@@ -23,7 +20,7 @@ class ClientRemover
     ): UserConnection {
         $userConnection = $userConnectionsStorage->findByConnection($connection);
 
-        if (!$userConnection instanceof UserConnection) {
+        if (! $userConnection instanceof UserConnection) {
             throw new UserConnectionNotFoundException();
         }
 

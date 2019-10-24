@@ -12,7 +12,7 @@ class ChatNewMessageSent extends AbstractChatEvent
     /**
      * @var array
      */
-    protected $data;
+    private $data = [];
 
     public function __construct(
         UserConnectionsStorageInterface $userConnectionStorage,
@@ -23,9 +23,6 @@ class ChatNewMessageSent extends AbstractChatEvent
         $this->data = $data;
     }
 
-    /**
-     * @return array
-     */
     public function getData(): array
     {
         return $this->data;
