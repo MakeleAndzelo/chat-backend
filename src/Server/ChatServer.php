@@ -9,6 +9,8 @@ use App\Events\ChatEventTypes;
 use App\Events\ChatNewMessageSent;
 use App\Events\ChatUserAuthorizationRequestedEvent;
 use App\Events\UserDisconnectEvent;
+use App\Exception\UnknownEventException;
+use Exception;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use SplObjectStorage;
@@ -71,6 +73,7 @@ final class ChatServer implements MessageComponentInterface
                 }
                 break;
             default:
+                throw new UnknownEventException();
                 break;
         }
     }
@@ -84,7 +87,7 @@ final class ChatServer implements MessageComponentInterface
         $eventDispatcher->dispatch(new UserDisconnectEvent($this->userConnectionsStorage, $removedUserConnection));
     }
 
-    public function onError(ConnectionInterface $conn, \Throwable $e): void
+    public function onError(ConnectionInterface $conn, Exception $e): void
     {
         $conn->send(json_encode([
             'type' => 'connectionError',
