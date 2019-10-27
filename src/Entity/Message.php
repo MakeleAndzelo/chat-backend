@@ -33,83 +33,56 @@ class Message
      */
     private $createdAt;
 
-    /**
-     * @return int
-     */
     public function getId(): int
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getBody(): string
     {
         return $this->body;
     }
 
-    /**
-     * @return User
-     */
     public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * @return Channel
-     */
     public function getChannel(): Channel
     {
         return $this->channel;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
-    /**
-     * @param string $body
-     * @return Message
-     */
-    public function setBody(string $body): Message
+    public function setBody(string $body): self
     {
         $this->body = $body;
+
         return $this;
     }
 
-    /**
-     * @param User $user
-     * @return Message
-     */
-    public function setUser(User $user): Message
+    public function setUser(User $user): self
     {
         $this->user = $user;
+
         return $this;
     }
 
-    /**
-     * @param Channel $channel
-     * @return Message
-     */
-    public function setChannel(Channel $channel): Message
+    public function setChannel(Channel $channel): self
     {
         $this->channel = $channel;
+
         return $this;
     }
 
-    /**
-     * @param DateTime $createdAt
-     * @return Message
-     */
-    public function setCreatedAt(DateTime $createdAt): Message
+    public function setCreatedAt(DateTime $createdAt): self
     {
         $this->createdAt = $createdAt;
+
         return $this;
     }
 }

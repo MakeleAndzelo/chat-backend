@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Server;
 
 use App\Entity\Channel;
@@ -40,7 +42,7 @@ class UserConnection
 
     public function getUserId(): ?int
     {
-        if (!$this->user instanceof User) {
+        if (! $this->user instanceof User) {
             return null;
         }
 
@@ -54,17 +56,11 @@ class UserConnection
         return $this;
     }
 
-    /**
-     * @return User
-     */
     public function getUser(): User
     {
         return $this->user;
     }
 
-    /**
-     * @return Channel
-     */
     public function getChannel(): Channel
     {
         return $this->channel;

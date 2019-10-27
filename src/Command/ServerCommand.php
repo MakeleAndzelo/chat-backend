@@ -14,12 +14,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class ServerCommand extends ContainerAwareCommand
 {
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName('chat:server');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $server = IoServer::factory(new HttpServer(
             new WsServer(

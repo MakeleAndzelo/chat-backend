@@ -6,26 +6,20 @@ namespace App\Services;
 
 use App\Entity\Channel;
 use App\Server\UserConnection;
+use App\Server\UserConnectionsStorageInterface;
 use Ratchet\ConnectionInterface;
-use SplObjectStorage;
 
 class ClientChannelChanger
 {
-    /**
-     * @param SplObjectStorage|UserConnection[] $clients
-     * @param ConnectionInterface $from
-     * @param Channel $channel
-     *
-     * @return SplObjectStorage
-     */
-    public function change(SplObjectStorage $clients, ConnectionInterface $from, Channel $channel): SplObjectStorage
-    {
-        foreach ($clients as $client) {
-            if ($client->getConnection() === $from) {
-                $client->changeChannel($channel);
-            }
-        }
+    public function change(
+        UserConnectionsStorageInterface $userConnectionsStorage,
+        ConnectionInterface $from,
+        Channel $channel
+    ): void {
+        $userConnection = $userConnectionsStorage->findByConnection($from);
 
-        return $clients;
+        if ($userConnection instanceof UserConnection) {
+            $userConnection->changeChannel($channel);
+        }
     }
 }

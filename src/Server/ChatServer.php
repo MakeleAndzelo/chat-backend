@@ -8,13 +8,15 @@ use App\Entity\Channel;
 use App\Events\ChatEventTypes;
 use App\Events\ChatNewMessageSent;
 use App\Events\ChatUserAuthorizationRequestedEvent;
-use App\Services\ClientChannelChanger;
+use App\Events\UserDisconnectEvent;
+use App\Exception\UnknownEventException;
+use Exception;
 use Ratchet\ConnectionInterface;
 use Ratchet\MessageComponentInterface;
 use SplObjectStorage;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ChatServer implements MessageComponentInterface
+final class ChatServer implements MessageComponentInterface
 {
     /**
      * @var ContainerInterface
@@ -22,78 +24,73 @@ class ChatServer implements MessageComponentInterface
     private $container;
 
     /**
-     * @var SplObjectStorage|UserConnection[]
+     * @var UserConnectionsStorage
      */
-    protected $clients;
+    private $userConnectionsStorage;
 
     public function __construct(ContainerInterface $container)
     {
-        $this->clients = new SplObjectStorage;
+        $this->userConnectionsStorage = new UserConnectionsStorage(new SplObjectStorage());
         $this->container = $container;
     }
 
-    public function onOpen(ConnectionInterface $conn)
+    public function onOpen(ConnectionInterface $conn): void
     {
-        $this->clients->attach(new UserConnection($conn));
+        $this->userConnectionsStorage->attach(new UserConnection($conn));
     }
 
-    function onMessage(ConnectionInterface $from, $msg)
+    public function onMessage(ConnectionInterface $from, $msg): void
     {
         $data = json_decode($msg, true);
         $eventDispatcher = $this->container->get('event_dispatcher');
 
-        switch($data['type']) {
+        switch ($data['type']) {
             case ChatEventTypes::USER_AUTHORIZATION_TYPE:
+                $clientAuthorizer = $this->container->get('app.chat.client_authorizer');
+                $clientAuthorizer->authorize($this->userConnectionsStorage, $from, $data['token'], $data['channel']['id']);
+
                 $eventDispatcher->dispatch(
-                    new ChatUserAuthorizationRequestedEvent($this->clients, $from, $data)
+                    new ChatUserAuthorizationRequestedEvent($this->userConnectionsStorage, $from, $data)
                 );
                 break;
             case ChatEventTypes::NEW_MESSAGE:
                 $eventDispatcher->dispatch(
-                  new ChatNewMessageSent($this->clients, $from, $data)
+                    new ChatNewMessageSent($this->userConnectionsStorage, $from, $data)
                 );
                 break;
             case ChatEventTypes::CHANNEL_CHANGE:
                 $entityManager = $this->container->get('doctrine.orm.entity_manager');
+                $clientChannelChanger = $this->container->get('app.chat.client_channel_changer');
                 $channelRepository = $entityManager->getRepository(Channel::class);
                 $channel = $channelRepository->findOneBy(['id' => $data['channel']['id']]);
 
                 if ($channel instanceof Channel) {
-                    $clientChannelChanger = new ClientChannelChanger();
-                    $this->clients = $clientChannelChanger->change($this->clients, $from, $channel);
+                    $clientChannelChanger->change(
+                        $this->userConnectionsStorage,
+                        $from,
+                        $channel
+                    );
                 }
                 break;
             default:
+                throw new UnknownEventException();
                 break;
         }
     }
 
-
-    function onClose(ConnectionInterface $conn)
+    public function onClose(ConnectionInterface $conn): void
     {
-        $userId = null;
+        $clientRemover = $this->container->get('app.chat.client_remover');
+        $removedUserConnection = $clientRemover->remove($this->userConnectionsStorage, $conn);
 
-        foreach ($this->clients as $client) {
-            if ($client->getConnection() === $conn) {
-                $userId = $client->getUserId();
-                $this->clients->detach($client);
-            }
-        }
-
-        if (null !== $userId) {
-            foreach ($this->clients as $client) {
-                $client->getConnection()->send(json_encode([
-                    'type' => 'offlineUser',
-                    'payload' => [
-                        'id' => $userId
-                    ]
-                ]));
-            }
-        }
+        $eventDispatcher = $this->container->get('event_dispatcher');
+        $eventDispatcher->dispatch(new UserDisconnectEvent($this->userConnectionsStorage, $removedUserConnection));
     }
 
-    function onError(ConnectionInterface $conn, \Exception $e)
+    public function onError(ConnectionInterface $conn, Exception $e): void
     {
-        // TODO: Implement onError() method.
+        $conn->send(json_encode([
+            'type' => 'connectionError',
+        ]));
     }
 }
