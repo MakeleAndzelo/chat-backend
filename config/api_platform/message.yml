@@ -1,0 +1,13 @@
+App\Entity\Message:
+  itemOperations: ['get']
+  collectionOperations: []
+  attributes:
+    pagination_items_per_page: 10
+    order:
+      createdAt: 'ASC'
+    normalization_context:
+      groups: ['message:read']
+  subresourceOperations:
+    api_channels_messages_get_subresource:
+      normalization_context:
+        groups: ['message_subresource:read']

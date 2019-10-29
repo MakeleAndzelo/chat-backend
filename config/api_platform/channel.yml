@@ -1,0 +1,10 @@
+App\Entity\Channel:
+  collectionOperations:
+    get:
+  itemOperations:
+    get:
+  properties:
+    messages:
+      subresource:
+        resourceClass: 'App\Entity\Message'
+        collection: true

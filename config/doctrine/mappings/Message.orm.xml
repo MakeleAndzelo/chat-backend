@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping">
+    <entity name="App\Entity\Message" table="messages" repository-class="App\Repository\MessageRepository">
+        <id name="id" column="id" type="integer">
+            <generator strategy="AUTO"/>
+        </id>
+
+        <field name="body" type="text" column="body"/>
+
+        <field name="createdAt" type="datetime" column="created_at"/>
+
+        <many-to-one field="user" target-entity="App\Entity\User" inversed-by="messages"/>
+
+        <many-to-one field="channel" target-entity="App\Entity\Channel" inversed-by="messages"/>
+    </entity>
+</doctrine-mapping>
