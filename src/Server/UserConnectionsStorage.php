@@ -22,7 +22,7 @@ class UserConnectionsStorage implements UserConnectionsStorageInterface
     /**
      * @return UserConnection[]|SplObjectStorage
      */
-    public function getUserConnections(): SplObjectStorage
+    public function getUserConnections()
     {
         return $this->userConnections;
     }
